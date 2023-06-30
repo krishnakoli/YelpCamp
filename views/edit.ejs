@@ -1,0 +1,78 @@
+<% layout('/layout/boilerplate')%>
+
+<style>
+    h1{
+        margin-top: 10px;
+        text-align: center;
+    }
+
+
+</style>
+
+<div class="row">
+    <h1>Edit Campground</h1>
+<div class="col-6 offset-3">
+    <form action="/campgrounds/<%= campgrounds.id %>" method="post" novalidate class="Validate_form" enctype="multipart/form-data">
+        <div class="title ">
+        <label for="title" class="form-label">Title</label>
+        <input type="text" class="form-control" name="title" id="title" required>
+        <div class="valid-feedback">
+            Looks good
+        </div>
+        <div class="invalid-feedback">
+            Please Choose the title
+        </div>
+    </div>
+    <div class="location mt-4">
+        <label for="location" class="form-label">Location</label>
+        <input type="text" class="form-control" name="location" id="location" required>
+        <div class="valid-feedback">
+            Looks good
+        </div>
+        <div class="invalid-feedback">
+            Please Enter the location
+        </div>
+    </div>
+    <div class=" mt-4">
+        <label for="formFileMultiple" class="form-label mb-2">Please upload the image</label>
+        <input class="form-control mt-2" type="file" name="image"   id="formFileMultiple" multiple>
+      </div>
+
+    <label for="price"  class="mt-4">Camping Price</label>
+  <div class="input-group ">
+    <span class="input-group-text">$</span>
+    <input type="text" class="form-control" id="price" name="price" aria-label="Amount (to the nearest dollar)"  required>
+    <span class="input-group-text">.00</span>
+    <div class="valid-feedback">
+        Looks good
+    </div>
+    <div class="invalid-feedback">
+        Please Enter the Price
+    </div>    
+</div>
+    
+    <div class="details mt-4">
+        <label for="description" class="form-label">Description</label>
+        <textarea name="description" class="form-control" id="description" cols="20" rows="5" required></textarea>
+        <div class="valid-feedback">
+            Looks good
+        </div>    
+        <div class="invalid-feedback">
+            Enter the description
+        </div>
+    </div>
+    <div class="img mt-4"></div>
+    <% campgrounds.images.forEach(function(img,i){%>
+        <input type="image" src="<%= img.url %>" class="img-thumbnail" >
+        <div class="form-check-inline">
+        <input type="checkbox"  name="deleteimages[]" id="<%=i %>" value="<%= img.filename%>">
+        </div>
+        <label for="<%= i %>" class="mb-2"> Click for Delete the images</label>
+    <% }) %>
+    <div class="url mt-4 mb-4">
+        <button class="btn btn-primary">Update   Campground</button>
+    </div>
+    <a href="/campgrounds">All Campgrounds</a>
+    </form>
+</div>
+</div>

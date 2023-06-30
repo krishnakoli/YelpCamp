@@ -1,0 +1,160 @@
+<% layout('/layout/boilerplate')%>
+
+
+    <style>
+
+        .B{
+            margin-bottom: 20px;
+        }
+
+        a {
+            color: aliceblue;
+            text-decoration: none;
+        }
+
+        .list-group {
+            background-color: slategray;
+            color: white;
+        }
+        .card-title{
+            color:black
+        }
+        .card-text{
+            color:black
+        }
+        .space{
+            color: black;
+        }
+    </style>
+<div id="map" style="width: 100%; height: 500px;"></div>
+    <div class="row ms-4 me-4 mb-4">
+        <div class="col-sm-6">
+            
+            <div class="card">
+                <!-- <div class="img width:50%">
+                    <% for(let img of campgrounds.images) {%>
+                        <img src="<%= img.url %>" class="card-img-top" alt="...">
+
+                    <%  }%>
+            </div> -->
+            <div id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <% campgrounds.images.forEach((img,i)=> {%>
+                    <div class="carousel-item <%= i===0? 'active':"" %> ">
+                        <img src="<%= img.url %>" class="card-img-top d-block w-100" alt="...">
+                    </div>
+                    <%})%>
+                </div>
+                <%if(campgrounds.images.length>1) { %>
+                
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+            <% } %>
+              </div>
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <%= campgrounds.title %>
+                    </h5>
+                    <p class="card-text">
+                        <%= campgrounds.description %>
+                    </p>
+                </div>
+                
+                    <li class="list-group-item text-muted">
+                        <%= campgrounds.location %>
+                    </li>
+                    <% if(campgrounds.author[0].username) {%>
+                    <li class="list-group-item">
+                        submitted by <%= campgrounds.author[0].username %>
+                    </li>
+                    <% } %>
+                    <li class="list-group-item">$<%= campgrounds.price %>/night</li>
+               <% if ( currentuser && campgrounds.author[0].equals(currentuser._id)) { %>               
+                <div class="card-body">
+                    <button class="btn btn-primary"> <a
+                            href="/campgrounds/<%= campgrounds._id %>/edit">Edit</a></button>
+                            
+                            <form class ="d-inline "action="/campgrounds/<%= campgrounds._id %>?_method=delete" method="post">
+                    <button class="btn btn-danger"> 
+                            delete </button>
+                                   
+                                    </form>
+                </div>
+                <% } %>
+                <div class="card-footer text-muted">
+                    2 days ago
+                </div>
+            </div>     
+    </div>
+    <div class="col-sm-6 mt-4 p-2">
+        <h2>Leave a Review</h2>
+                  <form action="/campgrounds/<%= campgrounds._id %>/review" method="post" novalidate class="Validate_form">
+                    <div class="mb-3">
+                        <label for="disabledRange" class="form-label">Rating</label>
+                    <input type="range" class="form-range"  id="disabledRange" name="Rating" min="0" max="5" required >
+                    </div>
+                    <div class="mb-3">
+                        <label for="Review" class="form-label">Review</label>
+                    <textarea name="body" id="Review" cols="30" rows="3" class="form-control" required></textarea>
+                    <div class="valid-feedback">
+                        Looks good
+                    </div>
+                    <div class="invalid-feedback">
+                        Please enter the review
+                    </div>
+                    </div>
+               <div class="B">
+                <button class="btn btn-success">
+                    submit
+                </button>
+               </div>
+            </form>
+            <% for(let view of campgrounds.reviews) { %>
+                <div class="card mt-3"> 
+                    <div class="space mt-2 p-2">
+                    <h6>Rating: <%= view.Rating %></h6>
+                        <p>Review: <%= view.body %></p>
+                        <p>By: <%= view.authorname %></p>
+                        <% if (view.User.equals(currentuser._id)) { %>
+                            <form action="/campgrounds/<%= campgrounds._id %>/review/<%= view._id %>?_method=delete" method="post">
+                                <button class="btn btn-sm btn-danger">delete</button>
+                            </form> 
+                        <% } %>
+                        
+                    </div>
+                </div>
+                <% } %>
+        </div>
+    </div>
+</div>    
+
+<script>
+    const Campgrounds=<%-JSON.stringify(campgrounds)%>
+</script>
+
+
+<script>
+     mapboxgl.accessToken ='pk.eyJ1Ijoid2l0Y2hlciIsImEiOiJjbGpmYno0bHUwMGQwM2txbTE1cjZiejV4In0.hhu5QzmJ2Sdx3bt8tybY8A';
+    const map = new mapboxgl.Map({
+    container: 'map', // container ID
+    style: 'mapbox://styles/mapbox/navigation-night-v1', // style URL
+    center:Campgrounds.geometry.coordinates , // starting position [lng, lat]
+    zoom: 10, // starting zoom
+    }); 
+    new mapboxgl.Marker()
+                .setLngLat(Campgrounds.geometry.coordinates)
+                .setPopup(
+                    new mapboxgl.Popup({offset:25})
+                    .setHTML(
+                        `<h2>${Campgrounds.title}</h2>`
+                    )
+                )
+                .addTo(map);
+</script>
+
